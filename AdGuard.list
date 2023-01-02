@@ -1,0 +1,5 @@
+# Adguard 专用
+
+# 本地/局域网地址
+DOMAIN-SUFFIX,local.adguard.org
+DOMAIN-SUFFIX,injections.adguard.org
