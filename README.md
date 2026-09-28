@@ -1,6 +1,6 @@
 # OpenClash 订阅转换模板
 
-`ACL4SSR_Online_NoAuto.ini` 保留原有分流和 SG07 → SG10 容错，并按名称生成 JP、SG、HK、TW、US、KR、DE、AU、GB、VN、NL、CH、AT、NO 挪威、SE、TR、IE、BG 地区组。在“🚀 节点选择”中选地区，该地区每 300 秒通过 Google 204 检查可用性和 HTTP 延迟，切换容差 50ms。该检测不衡量下载带宽。信息条目以及明确标注限速、应急的节点只保留手动选择。
+`ACL4SSR_Online_NoAuto.ini` 保留原有分流和 SG07 → SG10 容错，并按名称生成 JP 日本、SG 新加坡、HK 香港、TW 台湾、US 美国、KR 韩国、DE 德国、AU 澳大利亚、GB 英国、VN 越南、NL 荷兰、CH 瑞士、AT 奥地利、NO 挪威、SE 瑞典、TR 土耳其、IE 爱尔兰、BG 保加利亚 地区组。在“🚀 节点选择”中选地区，该地区每 300 秒通过 Google 204 检查可用性和 HTTP 延迟，切换容差 50ms。该检测不衡量下载带宽。信息条目以及明确标注限速、应急的节点只保留手动选择。
 
 转换模板地址保持不变：
 

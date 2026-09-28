@@ -4,7 +4,7 @@ require 'yaml'
 
 path = ARGV.fetch(0)
 config = YAML.load_file(path)
-regions = %w[JP SG HK TW US KR DE AU GB VN NL CH AT SE TR IE BG] + ['NO 挪威']
+regions = ["JP 日本", "SG 新加坡", "HK 香港", "TW 台湾", "US 美国", "KR 韩国", "DE 德国", "AU 澳大利亚", "GB 英国", "VN 越南", "NL 荷兰", "CH 瑞士", "AT 奥地利", "NO 挪威", "SE 瑞典", "TR 土耳其", "IE 爱尔兰", "BG 保加利亚"]
 changed = false
 Array(config['proxy-groups']).each do |group|
   next unless regions.include?(group['name']) && group['type'] == 'url-test'
