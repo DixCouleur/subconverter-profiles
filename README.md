@@ -36,6 +36,8 @@ SmartDNS 仅承接国内域名策略：终端 → dnsmasq:53 → OpenClash:7874 
 
 SmartDNS 使用 `6053`，绑定 `lo`，关闭“自动设置 dnsmasq”，让 dnsmasq 继续转发给 OpenClash。缓存限制为 1024 条、1 MiB，启用预获取和最多保留一小时的过期缓存；过期结果回应 TTL 为 3 秒。使用 `tcp:443,ping` 地址检测、`first-ping` 回应模式和 IPv4，关闭额外 WebUI 插件。`smartdns-openclash.conf` 放到 `/etc/smartdns/`，在已有 `custom.conf` 中加入对应的 `conf-file`，其余参数通过 UCI 管理。
 
+SmartDNS 的 IPv6 监听、双栈优选和 DNS64 均关闭；AAAA 查询直接返回 SOA，HTTPS 记录中的 `ipv6hint` 被过滤。UCI 主服务设置 `ipv6_server=0`、`dualstack_ip_selection=0`、`force_aaaa_soa=1`；备用服务保持关闭，并设置 `seconddns_no_dualstack_selection=1`、`seconddns_force_aaaa_soa=1`。客户端规则中的双栈优选也关闭。上游使用 IPv4 地址，保留 H3。
+
 两条 SmartDNS 上游的 UCI `type` 为 `h3`，地址分别为 `h3://223.5.5.5/dns-query`、`h3://223.6.6.6/dns-query`，`host_name`、`tls_host_verify` 和 `http_host` 均为 `dns.alidns.com`。使用 `h3://` 可以避免该版本将 `https://` 重新解释成普通 DoH。
 
 将 `smartdns_domestic.rb` 放到 `/etc/openclash/custom/`，在 `dns_h3.rb` 调用之后加入：
