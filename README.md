@@ -29,3 +29,23 @@ ruby -ryaml -E UTF-8 /etc/openclash/custom/dns_h3.rb "$CONFIG_FILE"
 同时开启 OpenClash 的 Fake-IP 缓存选项：`openclash.config.store_fakeip=1`。地区组、容错顺序和原有分流规则保持原样。
 
 在默认的 Fake-IP 排除模式下，脚本还将 `local.adguard.org`、`local.adguard.com`、`injections.adguard.org` 及其子域名加入 `fake-ip-filter`，让 AdGuard 使用真实地址处理网页注入脚本。`AdGuard.list` 同时为这三个域名提供直连规则。路由器配置正确后若仍有脚本超时，需要继续检查终端 AdGuard 的拦截和缓存。
+
+## SmartDNS 与 OpenClash
+
+SmartDNS 仅承接国内域名策略：终端 → dnsmasq:53 → OpenClash:7874 → SmartDNS:6053 → 阿里 H3。国外域名仍由 OpenClash 经“🛟 节点容错”查询 Cloudflare、Google H3。DNS 引导、代理节点域名和未分类域名的默认上游保留 `dns_h3.rb` 的配置，避免对需要代理的地址从本地测速。两个服务之间的本机 DNS 请求使用 UDP/TCP，公网 DNS 上游仍为 H3。
+
+SmartDNS 使用 `6053`，绑定 `lo`，关闭“自动设置 dnsmasq”，让 dnsmasq 继续转发给 OpenClash。缓存限制为 1024 条、1 MiB，启用预获取和最多保留一小时的过期缓存；过期结果回应 TTL 为 3 秒。使用 `tcp:443,ping` 地址检测、`first-ping` 回应模式和 IPv4，关闭额外 WebUI 插件。`smartdns-openclash.conf` 放到 `/etc/smartdns/`，在已有 `custom.conf` 中加入对应的 `conf-file`，其余参数通过 UCI 管理。
+
+两条 SmartDNS 上游的 UCI `type` 为 `h3`，地址分别为 `h3://223.5.5.5/dns-query`、`h3://223.6.6.6/dns-query`，`host_name`、`tls_host_verify` 和 `http_host` 均为 `dns.alidns.com`。使用 `h3://` 可以避免该版本将 `https://` 重新解释成普通 DoH。
+
+将 `smartdns_domestic.rb` 放到 `/etc/openclash/custom/`，在 `dns_h3.rb` 调用之后加入：
+
+```sh
+ruby -ryaml -E UTF-8 /etc/openclash/custom/smartdns_domestic.rb "$CONFIG_FILE"
+```
+
+脚本仅改变 `geosite:cn` 和已有 `oc-cn-domain` 规则集对应的 DNS 策略。SmartDNS 在 OpenClash 之前启动。若关闭 SmartDNS，应随后重新加载 OpenClash，完整覆写流程会恢复国内直连 H3 上游。
+
+## 避免版本查询启动额外核心
+
+`openclash_core_version.lua` 放到 `/etc/openclash/custom/`。LuCI 控制器的 `coremetacv()` 改为调用该模块的 `read(cn_port(), dase())`：查询运行核心的 `/version`，API 不可用时返回本轮开机缓存的版本或 `0`，不执行核心的 `-v`。该控制器补丁属于本地修改，更新 `luci-app-openclash` 后需要检查是否被覆盖。
