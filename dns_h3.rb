@@ -16,6 +16,14 @@ overseas = [
 (config['profile'] ||= {})['store-fake-ip'] = true
 dns = config['dns'] ||= {}
 dns['prefer-h3'] = false
+# AdGuard intercepts its injected scripts locally using their real addresses.
+# Fake-IP addresses prevent that interception and make page scripts time out.
+if dns.fetch('fake-ip-filter-mode', 'blacklist') == 'blacklist'
+  dns['fake-ip-filter'] = (Array(dns['fake-ip-filter']) + [
+    '+.local.adguard.org',
+    '+.injections.adguard.org'
+  ]).uniq
+end
 # Keep lists independent so YAML output has no aliases; OpenClash's loader
 # disables alias parsing in its normal overwrite path.
 dns['default-nameserver'] = domestic.map(&:dup)
