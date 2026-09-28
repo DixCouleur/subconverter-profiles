@@ -15,3 +15,15 @@ ruby -ryaml -E UTF-8 /etc/openclash/custom/regional_urltest.rb "$CONFIG_FILE"
 ```
 
 这样每次订阅更新、OpenClash 启动时都会使所有地区组定时检测，即使该地区当前没有被选中。脚本只修改这些地区 `url-test` 组的 `lazy` 字段。
+
+## Fake-IP 持久化和 HTTP/3 DNS
+
+`dns_h3.rb` 开启 `profile.store-fake-ip`，并将 DNS 上游统一为强制 HTTP/3。国内解析、DNS 服务器引导解析和代理节点域名解析使用阿里 DNS 的 `223.5.5.5`、`223.6.6.6`，经 `DIRECT` 连接；境外解析使用 Cloudflare、Google DNS，经“🛟 节点容错”连接。每个上游设置 `h3=true`，全局 `prefer-h3` 保持关闭。
+
+将脚本放到 `/etc/openclash/custom/`，在自定义覆写脚本的 `exit 0` 前加入：
+
+```sh
+ruby -ryaml -E UTF-8 /etc/openclash/custom/dns_h3.rb "$CONFIG_FILE"
+```
+
+同时开启 OpenClash 的 Fake-IP 缓存选项：`openclash.config.store_fakeip=1`。地区组、容错顺序和原有分流规则保持原样。
