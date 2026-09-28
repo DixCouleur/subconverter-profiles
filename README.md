@@ -28,4 +28,4 @@ ruby -ryaml -E UTF-8 /etc/openclash/custom/dns_h3.rb "$CONFIG_FILE"
 
 同时开启 OpenClash 的 Fake-IP 缓存选项：`openclash.config.store_fakeip=1`。地区组、容错顺序和原有分流规则保持原样。
 
-在默认的 Fake-IP 排除模式下，脚本还将 `local.adguard.org`、`injections.adguard.org` 及其子域名加入 `fake-ip-filter`，让 AdGuard 使用真实地址在终端本地拦截网页注入脚本，避免请求进入路由器后连接超时。已有直连规则继续保留。
+在默认的 Fake-IP 排除模式下，脚本还将 `local.adguard.org`、`local.adguard.com`、`injections.adguard.org` 及其子域名加入 `fake-ip-filter`，让 AdGuard 使用真实地址处理网页注入脚本。`AdGuard.list` 同时为这三个域名提供直连规则。路由器配置正确后若仍有脚本超时，需要继续检查终端 AdGuard 的拦截和缓存。

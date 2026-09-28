@@ -21,6 +21,7 @@ dns['prefer-h3'] = false
 if dns.fetch('fake-ip-filter-mode', 'blacklist') == 'blacklist'
   dns['fake-ip-filter'] = (Array(dns['fake-ip-filter']) + [
     '+.local.adguard.org',
+    '+.local.adguard.com',
     '+.injections.adguard.org'
   ]).uniq
 end
