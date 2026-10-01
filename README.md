@@ -17,8 +17,10 @@ Fake-IP 持久化。地区测速改为 600 秒、100 ms 容差；省略 `lazy` �
 1.19.31 默认 `lazy=true`，无需 `regional_urltest.rb`。原有地区匹配、容错顺序
 和手动选择组保留，不更改节点的 Hysteria2 带宽与 QUIC 窗口参数。
 
-`local.adguard.org` 精确 `REJECT`；`injections.adguard.org` 按 `adguard.org`
-父域名规则走代理。路由器 INI 不引用旧 `AdGuard.list`；其他配置继续保留。
+`local.adguard.org` 精确 `REJECT`；`local.adguard.com` 保留直连，两者为不同域名。
+`injections.adguard.org` 没有单独规则，由原有 `ProxyLite.list` 中的 `adguard.org`
+父域名规则正常分流；INI 不再重复添加整域代理条目。
+路由器 INI 不引用旧 `AdGuard.list`；其他配置继续保留。
 MosDNS 侧的精确 DNS 拒绝仍在本机配置中维护。
 
 OpenClash 原生设置负责运行端口、模式、API 密钥和 LuCI 参数。AX6000 自定义
