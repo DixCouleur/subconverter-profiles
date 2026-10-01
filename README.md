@@ -1,5 +1,33 @@
 # OpenClash 订阅转换模板
 
+## AX6000 路由器专用
+
+使用 [`AX6000_Router.ini`](AX6000_Router.ini)，基础设置来自
+[`AX6000_Base.yaml`](AX6000_Base.yaml)。转换模板地址为：
+
+`https://raw.githubusercontent.com/DixCouleur/subconverter-profiles/main/AX6000_Router.ini`
+
+此配置用于 AdGuardHome → MosDNS → 选择性 Mihomo Fake-IP 链路。阿里两个
+DoH 地址强制 H3，DNSPod 保留 UDP；节点、真实直连目标与 Fake-IP 排除域名
+使用这些直连上游，避免回指 AdGuardHome/MosDNS。`prefer-h3` 开启，上游并发竞速，
+不保证 H3 的应答优先于更快的 UDP 应答。
+
+日志为 `warning`，关闭进程匹配及 GEO 自动更新，启用 TCP 并发、统一延迟与
+Fake-IP 持久化。地区测速改为 600 秒、100 ms 容差；省略 `lazy` 时，Mihomo
+1.19.31 默认 `lazy=true`，无需 `regional_urltest.rb`。原有地区匹配、容错顺序
+和手动选择组保留，不更改节点的 Hysteria2 带宽与 QUIC 窗口参数。
+
+`local.adguard.org` 精确 `REJECT`；`injections.adguard.org` 按 `adguard.org`
+父域名规则走代理。路由器 INI 不引用旧 `AdGuard.list`；其他配置继续保留。
+MosDNS 侧的精确 DNS 拒绝仍在本机配置中维护。
+
+OpenClash 原生设置负责运行端口、模式、API 密钥和 LuCI 参数。AX6000 自定义
+覆写仅将 DNS 监听恢复为 `127.0.0.1:7874`，并清空 TUN DNS 劫持；上游、规则、
+测速及其他性能策略均来自专用配置。不要对这份配置再调用旧的 `dns_h3.rb`、
+`smartdns_domestic.rb` 或 `regional_urltest.rb`。
+
+以下章节说明原有通用配置及旧脚本，保持原用途。
+
 `ACL4SSR_Online_NoAuto.ini` 保留原有分流，并按名称生成 JP 日本、SG 新加坡、HK 香港、TW 台湾、US 美国、KR 韩国、DE 德国、AU 澳大利亚、GB 英国、VN 越南、NL 荷兰、CH 瑞士、AT 奥地利、NO 挪威、SE 瑞典、TR 土耳其、IE 爱尔兰、BG 保加利亚 地区组。在“🚀 节点选择”中选地区，该地区每 300 秒通过 Google 204 检查可用性和 HTTP 延迟，切换容差 50ms。该检测不衡量下载带宽。信息条目以及明确标注限速、应急的节点只保留手动选择。
 
 “🛟 节点容错”按 SG 新加坡 → JP 日本 → HK 香港 → TW 台湾 → US 美国 的顺序使用第一个可用地区；每个地区内部继续自动优选节点。当前地区没有可用节点时，切换到下一个可用地区。容错组每 300 秒检查一次，优先地区恢复可用后会重新优先使用。
