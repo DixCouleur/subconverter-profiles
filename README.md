@@ -17,7 +17,8 @@ Fake-IP 持久化。地区测速改为 600 秒、100 ms 容差；省略 `lazy` �
 1.19.31 默认 `lazy=true`，无需 `regional_urltest.rb`。原有地区匹配、容错顺序
 和手动选择组保留，不更改节点的 Hysteria2 带宽与 QUIC 窗口参数。
 
-`local.adguard.org` 精确 `REJECT`；`local.adguard.com` 保留直连，两者为不同域名。
+`local.adguard.org` 精确 `REJECT`；已移除旧版 `local.adguard.com` 的专门直连规则，
+该域名沿用普通分流。
 `injections.adguard.org` 没有单独规则，由原有 `ProxyLite.list` 中的 `adguard.org`
 父域名规则正常分流；INI 不再重复添加整域代理条目。
 路由器 INI 不引用旧 `AdGuard.list`；其他配置继续保留。
