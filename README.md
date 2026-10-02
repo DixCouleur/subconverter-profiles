@@ -8,9 +8,14 @@
 `https://raw.githubusercontent.com/DixCouleur/subconverter-profiles/main/AX6000_Router.ini`
 
 此配置用于 AdGuardHome → MosDNS → 选择性 Mihomo Fake-IP 链路。阿里两个
-DoH 地址强制 H3，DNSPod 保留 UDP；节点、真实直连目标与 Fake-IP 排除域名
-使用这些直连上游，避免回指 AdGuardHome/MosDNS。`prefer-h3` 开启，上游并发竞速，
-不保证 H3 的应答优先于更快的 UDP 应答。
+DoH 地址强制 H3，DNSPod 保留 UDP；国内/private 名称、节点与真实直连目标
+使用这些直连上游，避免回指 AdGuardHome/MosDNS。
+其他真实 DNS 查询使用 Cloudflare `https://1.1.1.1/dns-query` 和 Google
+`https://8.8.8.8/dns-query`，显式通过“🚀 节点选择”访问，并发取可用应答。
+`prefer-h3` 开启；海外 DoH 优先尝试 H3，不可用时允许 H2。阿里仍强制 H3，
+国内并发上游不保证 H3 的应答优先于更快的 DNSPod UDP 应答。
+OpenClash LuCI 的“DNS 请求遵循路由规则”应关闭（`enable_respect_rules=0`）；
+每个上游的 `#DIRECT` 或代理组已指定出口。代理组如选中 DIRECT，海外 DoH 也会直连。
 
 日志为 `warning`，关闭进程匹配及 GEO 自动更新，启用 TCP 并发、统一延迟与
 Fake-IP 持久化。地区测速改为 600 秒、100 ms 容差；省略 `lazy` 时，Mihomo
